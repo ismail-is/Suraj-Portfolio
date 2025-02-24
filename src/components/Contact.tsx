@@ -23,7 +23,8 @@ export const Contact = () => {
     };
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxaHkBSOm9xBtkNrtLAunhTjaD-DOY3p1Xm0QXrQiXfhE7BOl2CPEoTnjW_1mjMk12e/exec', {
+      // Replace this URL with your Google Apps Script Web App URL that you copied in step 2
+      const response = await fetch('YOUR_GOOGLE_APPS_SCRIPT_URL', {
         method: 'POST',
         mode: 'no-cors',
         headers: {
