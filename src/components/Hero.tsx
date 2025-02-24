@@ -9,7 +9,7 @@ export const Hero = () => {
   };
 
   return (
-    <section className="min-h-screen flex items-center justify-center relative px-4">
+    <section className="min-h-[calc(100vh-5rem)] flex items-center justify-center relative px-4">
       <div className="max-w-4xl mx-auto text-center reveal">
         <span className="text-primary inline-block px-4 py-2 rounded-full bg-primary/10 mb-6">
           Digital Marketing Expert

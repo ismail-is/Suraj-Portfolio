@@ -1,8 +1,10 @@
 
 import { useEffect } from "react";
+import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Services } from "@/components/Services";
 import { Contact } from "@/components/Contact";
+import { Footer } from "@/components/Footer";
 
 const Index = () => {
   useEffect(() => {
@@ -26,11 +28,15 @@ const Index = () => {
   }, []);
 
   return (
-    <main className="overflow-hidden">
-      <Hero />
-      <Services />
-      <Contact />
-    </main>
+    <>
+      <Navbar />
+      <main className="overflow-hidden pt-20">
+        <Hero />
+        <Services />
+        <Contact />
+      </main>
+      <Footer />
+    </>
   );
 };
 
