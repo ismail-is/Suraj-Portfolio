@@ -3,6 +3,12 @@ import { Link } from "react-router-dom";
 
 export const Navbar = () => {
   const scrollToSection = (sectionId: string) => {
+    // If we're not on the home page, navigate there first
+    if (!window.location.pathname.startsWith('/#')) {
+      window.location.href = `/#${sectionId}`;
+      return;
+    }
+    
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
   };
@@ -12,8 +18,12 @@ export const Navbar = () => {
       <div className="max-w-6xl mx-auto px-4 py-4">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-xl font-bold text-white">SP</span>
+            <div className="w-10 h-10 rounded-lg overflow-hidden">
+              <img 
+                src="/lovable-uploads/e402eba6-49b6-40f0-9ded-438884d8a826.png" 
+                alt="Digital Marketing Icon" 
+                className="w-full h-full object-cover"
+              />
             </div>
             <span className="text-xl font-bold">Suraj Poojari</span>
           </Link>
@@ -34,7 +44,7 @@ export const Navbar = () => {
               onClick={() => scrollToSection('blog')} 
               className="hover:text-primary transition-colors"
             >
-              Blogs
+              Blog
             </button>
             <button 
               onClick={() => scrollToSection('contact')} 
