@@ -1,11 +1,13 @@
 
-import { Link } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 
 export const Navbar = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
+
   const scrollToSection = (sectionId: string) => {
-    // If we're not on the home page, navigate there first
-    if (!window.location.pathname.startsWith('/#')) {
-      window.location.href = `/#${sectionId}`;
+    if (location.pathname !== '/') {
+      navigate('/', { state: { scrollTo: sectionId } });
       return;
     }
     

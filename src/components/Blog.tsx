@@ -1,8 +1,10 @@
 
+import { Link, useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 const blogPosts = [
   {
+    id: "future-web-dev",
     title: "The Future of Web Development",
     description: "Exploring the latest trends and technologies shaping the future of web development.",
     image: "https://images.unsplash.com/photo-1488590528505-98d2b5aba04b?auto=format&fit=crop&q=80&w=800",
@@ -10,6 +12,7 @@ const blogPosts = [
     readTime: "5 min read"
   },
   {
+    id: "modern-ui-design",
     title: "Mastering Modern UI Design",
     description: "Essential principles and practices for creating stunning user interfaces.",
     image: "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?auto=format&fit=crop&q=80&w=800",
@@ -17,6 +20,7 @@ const blogPosts = [
     readTime: "4 min read"
   },
   {
+    id: "scalable-applications",
     title: "Building Scalable Applications",
     description: "Best practices for creating applications that can grow with your business.",
     image: "https://images.unsplash.com/photo-1487058792275-0ad4aaf24ca7?auto=format&fit=crop&q=80&w=800",
@@ -26,6 +30,12 @@ const blogPosts = [
 ];
 
 export const Blog = () => {
+  const navigate = useNavigate();
+
+  const handleBlogClick = (postId: string) => {
+    navigate(`/blog/${postId}`);
+  };
+
   return (
     <section className="py-20 px-4 bg-gray-50" id="blog">
       <div className="max-w-6xl mx-auto reveal">
@@ -36,8 +46,12 @@ export const Blog = () => {
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {blogPosts.map((post, index) => (
-            <Card key={index} className="overflow-hidden hover:shadow-lg transition-shadow">
+          {blogPosts.map((post) => (
+            <Card 
+              key={post.id}
+              className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer"
+              onClick={() => handleBlogClick(post.id)}
+            >
               <div className="aspect-video relative overflow-hidden">
                 <img 
                   src={post.image} 
@@ -54,10 +68,7 @@ export const Blog = () => {
                 <CardDescription className="line-clamp-3">{post.description}</CardDescription>
               </CardHeader>
               <CardContent>
-                <a 
-                  href="#" 
-                  className="text-primary hover:underline inline-flex items-center"
-                >
+                <span className="text-primary hover:underline inline-flex items-center">
                   Read More
                   <svg
                     className="w-4 h-4 ml-2"
@@ -73,7 +84,7 @@ export const Blog = () => {
                       d="M17 8l4 4m0 0l-4 4m4-4H3"
                     />
                   </svg>
-                </a>
+                </span>
               </CardContent>
             </Card>
           ))}
