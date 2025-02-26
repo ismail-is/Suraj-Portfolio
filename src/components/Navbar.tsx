@@ -20,7 +20,7 @@ export const Navbar = () => {
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 rounded-lg overflow-hidden">
               <img 
-                src="/lovable-uploads/e402eba6-49b6-40f0-9ded-438884d8a826.png" 
+                src="https://i.pinimg.com/736x/83/6c/d2/836cd27d3bf3d81122d089088f60d60f.jpg" 
                 alt="Digital Marketing Icon" 
                 className="w-full h-full object-cover"
               />
