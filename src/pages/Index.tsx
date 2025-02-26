@@ -1,33 +1,42 @@
 
 import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { Navbar } from "@/components/Navbar";
 import { Hero } from "@/components/Hero";
 import { Services } from "@/components/Services";
 import { Blog } from "@/components/Blog";
 import { Contact } from "@/components/Contact";
 import { Footer } from "@/components/Footer";
-import { Navbar } from "@/components/Navbar";
 
 const Index = () => {
-  const location = useLocation();
-
   useEffect(() => {
-    // Check if there's a section to scroll to from navigation
-    if (location.state && location.state.scrollTo) {
-      const element = document.getElementById(location.state.scrollTo);
-      element?.scrollIntoView({ behavior: 'smooth' });
-      // Clear the state after scrolling
-      window.history.replaceState({}, document.title);
-    }
-  }, [location]);
+    const handleScroll = () => {
+      const reveals = document.querySelectorAll(".reveal");
+      reveals.forEach((reveal) => {
+        const windowHeight = window.innerHeight;
+        const elementTop = reveal.getBoundingClientRect().top;
+        const elementVisible = 150;
+
+        if (elementTop < windowHeight - elementVisible) {
+          reveal.classList.add("active");
+        }
+      });
+    };
+
+    window.addEventListener("scroll", handleScroll);
+    handleScroll(); // Initial check
+
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <>
       <Navbar />
-      <Hero />
-      <Services />
-      <Blog />
-      <Contact />
+      <main className="overflow-hidden pt-20">
+        <Hero />
+        <Services />
+        <Blog />
+        <Contact />
+      </main>
       <Footer />
     </>
   );
