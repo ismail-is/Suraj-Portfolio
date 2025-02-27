@@ -23,7 +23,7 @@ export const Contact = () => {
     };
 
     try {
-      const response = await fetch('https://script.google.com/macros/s/AKfycbxAcU9Mcva-Ms9nzs5DbXpsCzaU3mipQuFT03O4f-XAuGC58H5hWlGR9NhKKXFzEjBB/exec', {
+      await fetch('https://script.google.com/macros/s/AKfycbxAcU9Mcva-Ms9nzs5DbXpsCzaU3mipQuFT03O4f-XAuGC58H5hWlGR9NhKKXFzEjBB/exec', {
         method: 'POST',
         mode: 'no-cors',
         headers: {
@@ -32,13 +32,13 @@ export const Contact = () => {
         body: JSON.stringify(data),
       });
 
-      toast({
-        title: "Message sent!",
-        description: "Thank you for your message. I'll get back to you soon.",
-      });
-
       // Reset the form
       e.currentTarget.reset();
+      
+      toast({
+        title: "Success!",
+        description: "Your message has been sent. I'll get back to you soon.",
+      });
     } catch (error) {
       toast({
         variant: "destructive",
