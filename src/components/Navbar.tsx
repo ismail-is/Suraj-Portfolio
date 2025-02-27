@@ -46,6 +46,12 @@ export const Navbar = () => {
             >
               Blog
             </button>
+            <Link 
+              to="/portfolio" 
+              className="hover:text-primary transition-colors"
+            >
+              Portfolio
+            </Link>
             <button 
               onClick={() => scrollToSection('contact')} 
               className="hover:text-primary transition-colors"

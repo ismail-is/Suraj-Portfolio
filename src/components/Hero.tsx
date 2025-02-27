@@ -1,6 +1,7 @@
 
 import { Button } from "@/components/ui/button";
 import { ChevronDown } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const Hero = () => {
   const scrollToServices = () => {
@@ -21,8 +22,13 @@ export const Hero = () => {
           I help businesses grow their digital presence through strategic marketing solutions and data-driven campaigns.
         </p>
         <div className="flex gap-4 justify-center">
-          <Button size="lg">View Portfolio</Button>
-          <Button variant="outline" size="lg">Contact Me</Button>
+          <Link to="/portfolio">
+            <Button size="lg">View Portfolio</Button>
+          </Link>
+          <Button variant="outline" size="lg" onClick={() => {
+            const element = document.getElementById('contact');
+            element?.scrollIntoView({ behavior: 'smooth' });
+          }}>Contact Me</Button>
         </div>
       </div>
       <button 
