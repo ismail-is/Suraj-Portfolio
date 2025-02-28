@@ -1,10 +1,11 @@
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Play } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card";
+import { Play, X } from "lucide-react";
 
 const skills = [
   { name: "Content Strategy", level: 90 },
@@ -16,11 +17,15 @@ const skills = [
 ];
 
 // Posts data (representing content from Google Drive)
+// For Google Drive images, we need to use the format:
+// https://drive.google.com/uc?export=view&id=FILE_ID
 const postProjects = [
   {
     id: 1,
     title: "Brand Awareness Campaign",
     description: "Social media strategy and execution for a tech startup",
+    // For demo purposes, using unsplash image, but for real Google Drive images use:
+    // image: "https://drive.google.com/uc?export=view&id=YOUR_FILE_ID",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
     category: "post"
   },
@@ -69,6 +74,8 @@ const Portfolio = () => {
   const [filter, setFilter] = useState("all");
   const [videoProjects, setVideoProjects] = useState<Video[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const modalRef = useRef<HTMLDivElement>(null);
   const playlistId = "PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn";
 
   useEffect(() => {
@@ -134,6 +141,23 @@ const Portfolio = () => {
     
     fetchYouTubeVideos();
   }, []);
+
+  useEffect(() => {
+    // Close modal when clicking outside of it
+    const handleClickOutside = (event: MouseEvent) => {
+      if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
+        setActiveVideo(null);
+      }
+    };
+
+    if (activeVideo) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [activeVideo]);
   
   // Fallback videos in case the API fails
   const getFallbackVideos = (): Video[] => [
@@ -161,8 +185,14 @@ const Portfolio = () => {
     filter === "all" ? true : project.category === filter
   );
 
-  const openYouTubeVideo = (videoId: string) => {
-    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+  // Function to handle video click
+  const handleVideoClick = (videoId: string) => {
+    setActiveVideo(videoId);
+  };
+
+  // Function to close video modal
+  const closeVideoModal = () => {
+    setActiveVideo(null);
   };
 
   // Function to determine the image source based on project type
@@ -259,7 +289,7 @@ const Portfolio = () => {
                 <div 
                   key={typeof project.id === 'string' ? project.id : project.id.toString()} 
                   className="group relative overflow-hidden rounded-lg cursor-pointer"
-                  onClick={() => project.category === "video" && openYouTubeVideo(project.id as string)}
+                  onClick={() => project.category === "video" && handleVideoClick(project.id as string)}
                 >
                   <div className="aspect-video">
                     <img 
@@ -287,6 +317,39 @@ const Portfolio = () => {
             {filteredProjects.length === 0 && !isLoading && (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">No projects found for the selected category.</p>
+              </div>
+            )}
+
+            {/* Video Modal */}
+            {activeVideo && (
+              <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+                <div ref={modalRef} className="relative w-full max-w-4xl bg-white rounded-lg overflow-hidden">
+                  <Button 
+                    variant="ghost" 
+                    size="icon"
+                    className="absolute top-2 right-2 z-10 bg-white/10 text-white hover:bg-white/20"
+                    onClick={closeVideoModal}
+                  >
+                    <X className="h-5 w-5" />
+                  </Button>
+                  <div className="aspect-video w-full">
+                    <iframe 
+                      src={`https://www.youtube.com/embed/${activeVideo}?autoplay=1`}
+                      title="YouTube video player"
+                      className="w-full h-full"
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                      allowFullScreen
+                    ></iframe>
+                  </div>
+                  <div className="p-4 bg-white">
+                    <h3 className="text-xl font-bold mb-2">
+                      {videoProjects.find(v => v.id === activeVideo)?.title}
+                    </h3>
+                    <p className="text-muted-foreground">
+                      {videoProjects.find(v => v.id === activeVideo)?.description}
+                    </p>
+                  </div>
+                </div>
               </div>
             )}
           </div>
