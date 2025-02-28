@@ -55,6 +55,16 @@ interface Video {
   category: string;
 }
 
+interface Post {
+  id: number;
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+}
+
+type Project = Post | Video;
+
 const Portfolio = () => {
   const [filter, setFilter] = useState("all");
   const [videoProjects, setVideoProjects] = useState<Video[]>([]);
@@ -155,6 +165,15 @@ const Portfolio = () => {
     window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
   };
 
+  // Function to determine the image source based on project type
+  const getImageSource = (project: Project): string => {
+    if (project.category === "video") {
+      return (project as Video).thumbnail;
+    } else {
+      return (project as Post).image;
+    }
+  };
+
   return (
     <>
       <Navbar />
@@ -238,13 +257,13 @@ const Portfolio = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProjects.map((project) => (
                 <div 
-                  key={project.id} 
+                  key={typeof project.id === 'string' ? project.id : project.id.toString()} 
                   className="group relative overflow-hidden rounded-lg cursor-pointer"
                   onClick={() => project.category === "video" && openYouTubeVideo(project.id as string)}
                 >
                   <div className="aspect-video">
                     <img 
-                      src={project.category === "video" ? project.thumbnail : project.image}
+                      src={getImageSource(project)}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     />
