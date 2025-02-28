@@ -58,6 +58,7 @@ interface Video {
   description: string;
   thumbnail: string;
   category: string;
+  isShort?: boolean;
 }
 
 interface Post {
@@ -75,6 +76,7 @@ const Portfolio = () => {
   const [videoProjects, setVideoProjects] = useState<Video[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
+  const [activeVideoIsShort, setActiveVideoIsShort] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
   const playlistId = "PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn";
 
@@ -162,6 +164,14 @@ const Portfolio = () => {
   // Fallback videos in case the API fails
   const getFallbackVideos = (): Video[] => [
     {
+      id: "hGANiQBgxNk",  // Added your YouTube Shorts video
+      title: "Marketing Short",
+      description: "Quick marketing tips and tricks",
+      thumbnail: "https://i.ytimg.com/vi/hGANiQBgxNk/hqdefault.jpg",
+      category: "video",
+      isShort: true
+    },
+    {
       id: "dQw4w9WgXcQ",
       title: "Product Launch Video",
       description: "Promotional video for new product launch",
@@ -186,13 +196,15 @@ const Portfolio = () => {
   );
 
   // Function to handle video click
-  const handleVideoClick = (videoId: string) => {
+  const handleVideoClick = (videoId: string, isShort = false) => {
     setActiveVideo(videoId);
+    setActiveVideoIsShort(isShort);
   };
 
   // Function to close video modal
   const closeVideoModal = () => {
     setActiveVideo(null);
+    setActiveVideoIsShort(false);
   };
 
   // Function to determine the image source based on project type
@@ -289,7 +301,12 @@ const Portfolio = () => {
                 <div 
                   key={typeof project.id === 'string' ? project.id : project.id.toString()} 
                   className="group relative overflow-hidden rounded-lg cursor-pointer"
-                  onClick={() => project.category === "video" && handleVideoClick(project.id as string)}
+                  onClick={() => {
+                    if (project.category === "video") {
+                      const videoProject = project as Video;
+                      handleVideoClick(videoProject.id, videoProject.isShort);
+                    }
+                  }}
                 >
                   <div className="aspect-video">
                     <img 
@@ -323,7 +340,10 @@ const Portfolio = () => {
             {/* Video Modal */}
             {activeVideo && (
               <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                <div ref={modalRef} className="relative w-full max-w-4xl bg-white rounded-lg overflow-hidden">
+                <div 
+                  ref={modalRef} 
+                  className={`relative bg-white rounded-lg overflow-hidden ${activeVideoIsShort ? 'w-[350px] max-w-full' : 'w-full max-w-4xl'}`}
+                >
                   <Button 
                     variant="ghost" 
                     size="icon"
@@ -332,9 +352,9 @@ const Portfolio = () => {
                   >
                     <X className="h-5 w-5" />
                   </Button>
-                  <div className="aspect-video w-full">
+                  <div className={activeVideoIsShort ? 'aspect-[9/16] w-full' : 'aspect-video w-full'}>
                     <iframe 
-                      src={`https://www.youtube.com/embed/${activeVideo}?autoplay=1`}
+                      src={`https://www.youtube.com/embed/${activeVideo}?autoplay=1&rel=0`}
                       title="YouTube video player"
                       className="w-full h-full"
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -343,10 +363,10 @@ const Portfolio = () => {
                   </div>
                   <div className="p-4 bg-white">
                     <h3 className="text-xl font-bold mb-2">
-                      {videoProjects.find(v => v.id === activeVideo)?.title}
+                      {videoProjects.find(v => v.id === activeVideo)?.title || "Marketing Short"}
                     </h3>
                     <p className="text-muted-foreground">
-                      {videoProjects.find(v => v.id === activeVideo)?.description}
+                      {videoProjects.find(v => v.id === activeVideo)?.description || "Quick marketing tips and tricks"}
                     </p>
                   </div>
                 </div>
