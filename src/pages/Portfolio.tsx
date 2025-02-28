@@ -5,7 +5,7 @@ import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
 import { Card, CardContent } from "@/components/ui/card";
-import { Play, X } from "lucide-react";
+import { Play, X, ExternalLink } from "lucide-react";
 
 const skills = [
   { name: "Content Strategy", level: 90 },
@@ -334,6 +334,33 @@ const Portfolio = () => {
             {filteredProjects.length === 0 && !isLoading && (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">No projects found for the selected category.</p>
+              </div>
+            )}
+
+            {/* YouTube Playlist Section - Only shown when video filter is active or showing all */}
+            {(filter === "all" || filter === "video") && (
+              <div className="mt-16">
+                <h3 className="text-2xl font-bold text-center mb-8">My YouTube Playlist</h3>
+                <div className="relative overflow-hidden rounded-lg aspect-video w-full max-w-4xl mx-auto">
+                  <iframe 
+                    src="https://youtube.com/embed/videoseries?list=PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn"
+                    title="YouTube video playlist"
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  ></iframe>
+                </div>
+                <div className="mt-6 text-center">
+                  <a 
+                    href="https://youtube.com/playlist?list=PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center text-primary hover:text-primary/80 font-medium"
+                  >
+                    View full playlist on YouTube
+                    <ExternalLink className="ml-2 h-4 w-4" />
+                  </a>
+                </div>
               </div>
             )}
 
