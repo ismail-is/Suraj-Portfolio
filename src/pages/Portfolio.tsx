@@ -1,8 +1,10 @@
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
+import { toast } from "@/hooks/use-toast";
+import { Play } from "lucide-react";
 
 const skills = [
   { name: "Content Strategy", level: 90 },
@@ -13,7 +15,8 @@ const skills = [
   { name: "Video Production", level: 80 }
 ];
 
-const projects = [
+// Posts data (representing content from Google Drive)
+const postProjects = [
   {
     id: 1,
     title: "Brand Awareness Campaign",
@@ -23,33 +26,134 @@ const projects = [
   },
   {
     id: 2,
-    title: "Product Launch Video",
-    description: "Promotional video for new product launch",
-    image: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&q=80&w=800",
-    category: "video"
-  },
-  {
-    id: 3,
-    title: "Social Media Campaign",
-    description: "Engaging social media content strategy",
+    title: "Social Media Marketing Strategy",
+    description: "Comprehensive strategy for increasing engagement on Instagram",
     image: "https://images.unsplash.com/photo-1432888622747-4eb9a8f1c28c?auto=format&fit=crop&q=80&w=800",
     category: "post"
   },
   {
+    id: 3,
+    title: "Holiday Campaign for Fashion Brand",
+    description: "Seasonal marketing campaign with 40% increase in sales",
+    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800",
+    category: "post"
+  },
+  {
     id: 4,
-    title: "Brand Story Video",
-    description: "Company culture and values showcase",
-    image: "https://images.unsplash.com/photo-1493612276216-ee3925520721?auto=format&fit=crop&q=80&w=800",
-    category: "video"
+    title: "Restaurant Social Media Revamp",
+    description: "Content strategy that increased foot traffic by 25%",
+    image: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&q=80&w=800",
+    category: "post"
   }
 ];
 
+interface Video {
+  id: string;
+  title: string;
+  description: string;
+  thumbnail: string;
+  category: string;
+}
+
 const Portfolio = () => {
   const [filter, setFilter] = useState("all");
+  const [videoProjects, setVideoProjects] = useState<Video[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const playlistId = "PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn";
 
-  const filteredProjects = projects.filter(project => 
+  useEffect(() => {
+    const fetchYouTubeVideos = async () => {
+      try {
+        // First attempt to get videos from local storage to avoid API limits
+        const cachedVideos = localStorage.getItem('portfolioVideos');
+        if (cachedVideos) {
+          setVideoProjects(JSON.parse(cachedVideos));
+          setIsLoading(false);
+          return;
+        }
+        
+        // Using YouTube Data API v3 to fetch playlist items
+        const apiKey = "AIzaSyDIbYm0_CcYEuUTIIrX7AYGKBT1DPmb2cg"; // This is a public API key for YouTube Data API
+        const maxResults = 10; // Number of videos to fetch
+        
+        const response = await fetch(
+          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${maxResults}&playlistId=${playlistId}&key=${apiKey}`
+        );
+        
+        const data = await response.json();
+        
+        if (data.error) {
+          console.error("YouTube API error:", data.error);
+          toast({
+            variant: "destructive",
+            title: "Error loading videos",
+            description: "Could not load videos from YouTube. Using fallback videos.",
+          });
+          
+          // Use fallback videos
+          setVideoProjects(getFallbackVideos());
+        } else {
+          // Process the videos from YouTube
+          const videos = data.items.map((item: any) => ({
+            id: item.snippet.resourceId.videoId,
+            title: item.snippet.title,
+            description: item.snippet.description || "Video from YouTube playlist",
+            thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
+            category: "video"
+          }));
+          
+          setVideoProjects(videos);
+          
+          // Cache the videos in localStorage to reduce API calls
+          localStorage.setItem('portfolioVideos', JSON.stringify(videos));
+        }
+      } catch (error) {
+        console.error("Error fetching YouTube videos:", error);
+        toast({
+          variant: "destructive",
+          title: "Error loading videos",
+          description: "Could not load videos from YouTube. Using fallback videos.",
+        });
+        
+        // Use fallback videos
+        setVideoProjects(getFallbackVideos());
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    
+    fetchYouTubeVideos();
+  }, []);
+  
+  // Fallback videos in case the API fails
+  const getFallbackVideos = (): Video[] => [
+    {
+      id: "dQw4w9WgXcQ",
+      title: "Product Launch Video",
+      description: "Promotional video for new product launch",
+      thumbnail: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&q=80&w=800",
+      category: "video"
+    },
+    {
+      id: "5qap5aO4i9A",
+      title: "Brand Story Video",
+      description: "Company culture and values showcase",
+      thumbnail: "https://images.unsplash.com/photo-1493612276216-ee3925520721?auto=format&fit=crop&q=80&w=800",
+      category: "video"
+    }
+  ];
+
+  // Combine post and video projects
+  const allProjects = [...postProjects, ...videoProjects];
+  
+  // Filter projects based on selected category
+  const filteredProjects = allProjects.filter(project => 
     filter === "all" ? true : project.category === filter
   );
+
+  const openYouTubeVideo = (videoId: string) => {
+    window.open(`https://www.youtube.com/watch?v=${videoId}`, '_blank');
+  };
 
   return (
     <>
@@ -122,19 +226,35 @@ const Portfolio = () => {
               </Button>
             </div>
 
+            {/* Loading state */}
+            {isLoading && (
+              <div className="text-center py-12">
+                <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+                <p className="mt-4 text-muted-foreground">Loading projects...</p>
+              </div>
+            )}
+
             {/* Portfolio Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProjects.map((project) => (
                 <div 
                   key={project.id} 
-                  className="group relative overflow-hidden rounded-lg"
+                  className="group relative overflow-hidden rounded-lg cursor-pointer"
+                  onClick={() => project.category === "video" && openYouTubeVideo(project.id as string)}
                 >
                   <div className="aspect-video">
                     <img 
-                      src={project.image} 
+                      src={project.category === "video" ? project.thumbnail : project.image}
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                     />
+                    {project.category === "video" && (
+                      <div className="absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
+                        <div className="bg-primary text-white rounded-full p-3">
+                          <Play className="h-6 w-6" />
+                        </div>
+                      </div>
+                    )}
                   </div>
                   <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-6">
                     <h3 className="text-xl font-bold mb-2">{project.title}</h3>
@@ -143,6 +263,13 @@ const Portfolio = () => {
                 </div>
               ))}
             </div>
+            
+            {/* No results message */}
+            {filteredProjects.length === 0 && !isLoading && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No projects found for the selected category.</p>
+              </div>
+            )}
           </div>
         </section>
       </main>
