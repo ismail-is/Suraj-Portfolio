@@ -2,7 +2,7 @@
 import React from 'react';
 import { useContent } from '@/context/ContentContext';
 import { Button } from '@/components/ui/button';
-import { Trash2 } from 'lucide-react';
+import { Trash2, ExternalLink } from 'lucide-react';
 import { toast } from '@/hooks/use-toast';
 
 const ContentList = () => {
@@ -37,9 +37,13 @@ const ContentList = () => {
               <div key={video.id} className="flex items-start gap-4 border-b pb-4">
                 <div className="relative w-20 h-16 overflow-hidden rounded">
                   <img 
-                    src={video.thumbnail} 
+                    src={video.thumbnail || "https://via.placeholder.com/320x180?text=Video+Thumbnail"} 
                     alt={video.title} 
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://via.placeholder.com/320x180?text=Video+Thumbnail";
+                    }}
                   />
                 </div>
                 <div className="flex-1 min-w-0">
@@ -52,6 +56,17 @@ const ContentList = () => {
                       YouTube Short
                     </span>
                   )}
+                  <div className="mt-1">
+                    <a 
+                      href={video.url} 
+                      target="_blank" 
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center text-xs text-blue-500 hover:underline"
+                    >
+                      <ExternalLink className="h-3 w-3 mr-1" />
+                      View on YouTube
+                    </a>
+                  </div>
                 </div>
                 <Button 
                   variant="ghost" 
@@ -78,9 +93,13 @@ const ContentList = () => {
               <div key={post.id} className="flex items-start gap-4 border-b pb-4">
                 <div className="relative w-20 h-16 overflow-hidden rounded">
                   <img 
-                    src={post.image} 
+                    src={post.image || "https://via.placeholder.com/320x180?text=Post+Image"} 
                     alt={post.title} 
                     className="w-full h-full object-cover"
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement;
+                      target.src = "https://via.placeholder.com/320x180?text=Post+Image";
+                    }}
                   />
                 </div>
                 <div className="flex-1 min-w-0">
