@@ -9,24 +9,27 @@ import BlogPost from "./pages/BlogPost";
 import Portfolio from "./pages/Portfolio";
 import NotFound from "./pages/NotFound";
 import Dashboard from "./pages/Dashboard";
+import { ContentProvider } from "./context/ContentContext";
 
 const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Index />} />
-          <Route path="/blog/:postId" element={<BlogPost />} />
-          <Route path="/portfolio" element={<Portfolio />} />
-          <Route path="/admin-dashboard-8492" element={<Dashboard />} />
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ContentProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/blog/:postId" element={<BlogPost />} />
+            <Route path="/portfolio" element={<Portfolio />} />
+            <Route path="/admin-dashboard-8492" element={<Dashboard />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ContentProvider>
   </QueryClientProvider>
 );
 
