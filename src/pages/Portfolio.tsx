@@ -1,4 +1,3 @@
-
 import { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -16,16 +15,11 @@ const skills = [
   { name: "Video Production", level: 80 }
 ];
 
-// Posts data (representing content from Google Drive)
-// For Google Drive images, we need to use the format:
-// https://drive.google.com/uc?export=view&id=FILE_ID
 const postProjects = [
   {
     id: 1,
     title: "Brand Awareness Campaign",
     description: "Social media strategy and execution for a tech startup",
-    // For demo purposes, using unsplash image, but for real Google Drive images use:
-    // image: "https://drive.google.com/uc?export=view&id=YOUR_FILE_ID",
     image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
     category: "post"
   },
@@ -83,7 +77,6 @@ const Portfolio = () => {
   useEffect(() => {
     const fetchYouTubeVideos = async () => {
       try {
-        // First attempt to get videos from local storage to avoid API limits
         const cachedVideos = localStorage.getItem('portfolioVideos');
         if (cachedVideos) {
           setVideoProjects(JSON.parse(cachedVideos));
@@ -91,9 +84,8 @@ const Portfolio = () => {
           return;
         }
         
-        // Using YouTube Data API v3 to fetch playlist items
-        const apiKey = "AIzaSyDIbYm0_CcYEuUTIIrX7AYGKBT1DPmb2cg"; // This is a public API key for YouTube Data API
-        const maxResults = 10; // Number of videos to fetch
+        const apiKey = "AIzaSyDIbYm0_CcYEuUTIIrX7AYGKBT1DPmb2cg";
+        const maxResults = 10;
         
         const response = await fetch(
           `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${maxResults}&playlistId=${playlistId}&key=${apiKey}`
@@ -109,10 +101,8 @@ const Portfolio = () => {
             description: "Could not load videos from YouTube. Using fallback videos.",
           });
           
-          // Use fallback videos
           setVideoProjects(getFallbackVideos());
         } else {
-          // Process the videos from YouTube
           const videos = data.items.map((item: any) => ({
             id: item.snippet.resourceId.videoId,
             title: item.snippet.title,
@@ -123,7 +113,6 @@ const Portfolio = () => {
           
           setVideoProjects(videos);
           
-          // Cache the videos in localStorage to reduce API calls
           localStorage.setItem('portfolioVideos', JSON.stringify(videos));
         }
       } catch (error) {
@@ -134,7 +123,6 @@ const Portfolio = () => {
           description: "Could not load videos from YouTube. Using fallback videos.",
         });
         
-        // Use fallback videos
         setVideoProjects(getFallbackVideos());
       } finally {
         setIsLoading(false);
@@ -145,7 +133,6 @@ const Portfolio = () => {
   }, []);
 
   useEffect(() => {
-    // Close modal when clicking outside of it
     const handleClickOutside = (event: MouseEvent) => {
       if (modalRef.current && !modalRef.current.contains(event.target as Node)) {
         setActiveVideo(null);
@@ -161,10 +148,9 @@ const Portfolio = () => {
     };
   }, [activeVideo]);
   
-  // Fallback videos in case the API fails
   const getFallbackVideos = (): Video[] => [
     {
-      id: "hGANiQBgxNk",  // Added your YouTube Shorts video
+      id: "hGANiQBgxNk",
       title: "Marketing Short",
       description: "Quick marketing tips and tricks",
       thumbnail: "https://i.ytimg.com/vi/hGANiQBgxNk/hqdefault.jpg",
@@ -187,27 +173,22 @@ const Portfolio = () => {
     }
   ];
 
-  // Combine post and video projects
   const allProjects = [...postProjects, ...videoProjects];
   
-  // Filter projects based on selected category
   const filteredProjects = allProjects.filter(project => 
     filter === "all" ? true : project.category === filter
   );
 
-  // Function to handle video click
   const handleVideoClick = (videoId: string, isShort = false) => {
     setActiveVideo(videoId);
     setActiveVideoIsShort(isShort);
   };
 
-  // Function to close video modal
   const closeVideoModal = () => {
     setActiveVideo(null);
     setActiveVideoIsShort(false);
   };
 
-  // Function to determine the image source based on project type
   const getImageSource = (project: Project): string => {
     if (project.category === "video") {
       return (project as Video).thumbnail;
@@ -220,7 +201,6 @@ const Portfolio = () => {
     <>
       <Navbar />
       <main className="pt-24 pb-16">
-        {/* About & Skills Section */}
         <section className="py-20 px-4 bg-gray-50">
           <div className="max-w-6xl mx-auto">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -260,12 +240,10 @@ const Portfolio = () => {
           </div>
         </section>
 
-        {/* Portfolio Section */}
         <section className="py-20 px-4">
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-12">My Work</h2>
             
-            {/* Filter Buttons */}
             <div className="flex justify-center gap-4 mb-12">
               <Button 
                 variant={filter === "all" ? "default" : "outline"}
@@ -287,7 +265,6 @@ const Portfolio = () => {
               </Button>
             </div>
 
-            {/* Loading state */}
             {isLoading && (
               <div className="text-center py-12">
                 <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
@@ -295,7 +272,6 @@ const Portfolio = () => {
               </div>
             )}
 
-            {/* Portfolio Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProjects.map((project) => (
                 <div 
@@ -330,41 +306,31 @@ const Portfolio = () => {
               ))}
             </div>
             
-            {/* No results message */}
             {filteredProjects.length === 0 && !isLoading && (
               <div className="text-center py-12">
                 <p className="text-muted-foreground">No projects found for the selected category.</p>
               </div>
             )}
 
-            {/* YouTube Playlist Section - Only shown when video filter is active or showing all */}
             {(filter === "all" || filter === "video") && (
               <div className="mt-16">
                 <h3 className="text-2xl font-bold text-center mb-8">My YouTube Playlist</h3>
-                <div className="relative overflow-hidden rounded-lg aspect-video w-full max-w-4xl mx-auto">
+                <div className="relative overflow-hidden rounded-lg w-full max-w-4xl mx-auto">
                   <iframe 
-                    src="https://youtube.com/embed/videoseries?list=PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn"
-                    title="YouTube video playlist"
-                    className="w-full h-full"
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    width="560" 
+                    height="315" 
+                    src="https://www.youtube.com/embed/videoseries?list=PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn" 
+                    title="YouTube video player" 
+                    frameBorder="0" 
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
+                    referrerPolicy="strict-origin-when-cross-origin" 
                     allowFullScreen
+                    className="w-full aspect-video"
                   ></iframe>
-                </div>
-                <div className="mt-6 text-center">
-                  <a 
-                    href="https://youtube.com/playlist?list=PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center text-primary hover:text-primary/80 font-medium"
-                  >
-                    View full playlist on YouTube
-                    <ExternalLink className="ml-2 h-4 w-4" />
-                  </a>
                 </div>
               </div>
             )}
 
-            {/* Video Modal */}
             {activeVideo && (
               <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
                 <div 
