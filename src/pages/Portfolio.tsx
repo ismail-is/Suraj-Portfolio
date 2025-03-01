@@ -3,8 +3,8 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/hooks/use-toast";
-import { Card, CardContent } from "@/components/ui/card";
-import { Play, X, ExternalLink } from "lucide-react";
+import { Play, X } from "lucide-react";
+import { VideoContent, PostContent } from "@/context/ContentContext";
 
 const skills = [
   { name: "Content Strategy", level: 90 },
@@ -15,7 +15,7 @@ const skills = [
   { name: "Video Production", level: 80 }
 ];
 
-const postProjects = [
+const fallbackPosts = [
   {
     id: 1,
     title: "Brand Awareness Campaign",
@@ -46,28 +46,45 @@ const postProjects = [
   }
 ];
 
-interface Video {
-  id: string;
+const fallbackVideos = [
+  {
+    id: "hGANiQBgxNk",
+    title: "Marketing Short",
+    description: "Quick marketing tips and tricks",
+    thumbnail: "https://i.ytimg.com/vi/hGANiQBgxNk/hqdefault.jpg",
+    category: "video",
+    isShort: true
+  },
+  {
+    id: "dQw4w9WgXcQ",
+    title: "Product Launch Video",
+    description: "Promotional video for new product launch",
+    thumbnail: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&q=80&w=800",
+    category: "video"
+  },
+  {
+    id: "5qap5aO4i9A",
+    title: "Brand Story Video",
+    description: "Company culture and values showcase",
+    thumbnail: "https://images.unsplash.com/photo-1493612276216-ee3925520721?auto=format&fit=crop&q=80&w=800",
+    category: "video"
+  }
+];
+
+interface Project {
+  id: string | number;
   title: string;
   description: string;
-  thumbnail: string;
   category: string;
+  image?: string;
+  thumbnail?: string;
   isShort?: boolean;
 }
 
-interface Post {
-  id: number;
-  title: string;
-  description: string;
-  image: string;
-  category: string;
-}
-
-type Project = Post | Video;
-
 const Portfolio = () => {
   const [filter, setFilter] = useState("all");
-  const [videoProjects, setVideoProjects] = useState<Video[]>([]);
+  const [dashboardPosts, setDashboardPosts] = useState<PostContent[]>([]);
+  const [dashboardVideos, setDashboardVideos] = useState<VideoContent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [activeVideoIsShort, setActiveVideoIsShort] = useState(false);
@@ -75,61 +92,22 @@ const Portfolio = () => {
   const playlistId = "PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn";
 
   useEffect(() => {
-    const fetchYouTubeVideos = async () => {
-      try {
-        const cachedVideos = localStorage.getItem('portfolioVideos');
-        if (cachedVideos) {
-          setVideoProjects(JSON.parse(cachedVideos));
-          setIsLoading(false);
-          return;
-        }
-        
-        const apiKey = "AIzaSyDIbYm0_CcYEuUTIIrX7AYGKBT1DPmb2cg";
-        const maxResults = 10;
-        
-        const response = await fetch(
-          `https://www.googleapis.com/youtube/v3/playlistItems?part=snippet&maxResults=${maxResults}&playlistId=${playlistId}&key=${apiKey}`
-        );
-        
-        const data = await response.json();
-        
-        if (data.error) {
-          console.error("YouTube API error:", data.error);
-          toast({
-            variant: "destructive",
-            title: "Error loading videos",
-            description: "Could not load videos from YouTube. Using fallback videos.",
-          });
-          
-          setVideoProjects(getFallbackVideos());
-        } else {
-          const videos = data.items.map((item: any) => ({
-            id: item.snippet.resourceId.videoId,
-            title: item.snippet.title,
-            description: item.snippet.description || "Video from YouTube playlist",
-            thumbnail: item.snippet.thumbnails.high?.url || item.snippet.thumbnails.default?.url,
-            category: "video"
-          }));
-          
-          setVideoProjects(videos);
-          
-          localStorage.setItem('portfolioVideos', JSON.stringify(videos));
-        }
-      } catch (error) {
-        console.error("Error fetching YouTube videos:", error);
-        toast({
-          variant: "destructive",
-          title: "Error loading videos",
-          description: "Could not load videos from YouTube. Using fallback videos.",
-        });
-        
-        setVideoProjects(getFallbackVideos());
-      } finally {
-        setIsLoading(false);
+    const loadDashboardContent = () => {
+      const savedVideos = localStorage.getItem('dashboardVideos');
+      const savedPosts = localStorage.getItem('dashboardPosts');
+      
+      if (savedVideos) {
+        setDashboardVideos(JSON.parse(savedVideos));
       }
+      
+      if (savedPosts) {
+        setDashboardPosts(JSON.parse(savedPosts));
+      }
+      
+      setIsLoading(false);
     };
     
-    fetchYouTubeVideos();
+    loadDashboardContent();
   }, []);
 
   useEffect(() => {
@@ -148,32 +126,41 @@ const Portfolio = () => {
     };
   }, [activeVideo]);
   
-  const getFallbackVideos = (): Video[] => [
-    {
-      id: "hGANiQBgxNk",
-      title: "Marketing Short",
-      description: "Quick marketing tips and tricks",
-      thumbnail: "https://i.ytimg.com/vi/hGANiQBgxNk/hqdefault.jpg",
-      category: "video",
-      isShort: true
-    },
-    {
-      id: "dQw4w9WgXcQ",
-      title: "Product Launch Video",
-      description: "Promotional video for new product launch",
-      thumbnail: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&q=80&w=800",
-      category: "video"
-    },
-    {
-      id: "5qap5aO4i9A",
-      title: "Brand Story Video",
-      description: "Company culture and values showcase",
-      thumbnail: "https://images.unsplash.com/photo-1493612276216-ee3925520721?auto=format&fit=crop&q=80&w=800",
-      category: "video"
-    }
-  ];
+  const postProjects = dashboardPosts.length > 0 
+    ? dashboardPosts.map(post => ({
+        ...post,
+        category: "post"
+      }))
+    : fallbackPosts;
+  
+  const videoProjects = dashboardVideos.length > 0
+    ? dashboardVideos.map(video => ({
+        id: video.id,
+        title: video.title,
+        description: video.description,
+        thumbnail: video.thumbnail,
+        category: "video",
+        isShort: video.isShort
+      }))
+    : fallbackVideos;
 
-  const allProjects = [...postProjects, ...videoProjects];
+  const allProjects: Project[] = [
+    ...postProjects.map(post => ({
+      id: post.id,
+      title: post.title,
+      description: post.description,
+      image: post.image,
+      category: "post"
+    })),
+    ...videoProjects.map(video => ({
+      id: video.id,
+      title: video.title,
+      description: video.description,
+      thumbnail: video.thumbnail,
+      category: "video",
+      isShort: video.isShort
+    }))
+  ];
   
   const filteredProjects = allProjects.filter(project => 
     filter === "all" ? true : project.category === filter
@@ -191,9 +178,9 @@ const Portfolio = () => {
 
   const getImageSource = (project: Project): string => {
     if (project.category === "video") {
-      return (project as Video).thumbnail;
+      return project.thumbnail || '';
     } else {
-      return (project as Post).image;
+      return project.image || '';
     }
   };
 
@@ -275,12 +262,11 @@ const Portfolio = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProjects.map((project) => (
                 <div 
-                  key={typeof project.id === 'string' ? project.id : project.id.toString()} 
+                  key={project.id.toString()} 
                   className="group relative overflow-hidden rounded-lg cursor-pointer"
                   onClick={() => {
                     if (project.category === "video") {
-                      const videoProject = project as Video;
-                      handleVideoClick(videoProject.id, videoProject.isShort);
+                      handleVideoClick(project.id.toString(), project.isShort);
                     }
                   }}
                 >
@@ -356,10 +342,10 @@ const Portfolio = () => {
                   </div>
                   <div className="p-4 bg-white">
                     <h3 className="text-xl font-bold mb-2">
-                      {videoProjects.find(v => v.id === activeVideo)?.title || "Marketing Short"}
+                      {videoProjects.find(v => v.id === activeVideo)?.title || "Marketing Video"}
                     </h3>
                     <p className="text-muted-foreground">
-                      {videoProjects.find(v => v.id === activeVideo)?.description || "Quick marketing tips and tricks"}
+                      {videoProjects.find(v => v.id === activeVideo)?.description || "Video description"}
                     </p>
                   </div>
                 </div>
