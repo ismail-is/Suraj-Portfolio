@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/components/ui/use-toast";
+import { Send } from "lucide-react";
 
 export const Contact = () => {
   const [isLoading, setIsLoading] = useState(false);
@@ -51,7 +52,7 @@ export const Contact = () => {
   };
 
   return (
-    <section className="py-20 px-4" id="contact">
+    <section className="py-20 px-4 bg-gradient-to-b from-muted/30 to-background" id="contact">
       <div className="max-w-4xl mx-auto reveal">
         <div className="text-center mb-12">
           <h2 className="text-3xl font-bold mb-4">Get in Touch</h2>
@@ -59,25 +60,36 @@ export const Contact = () => {
             Ready to elevate your digital presence? Let's discuss how I can help your business grow.
           </p>
         </div>
-        <form onSubmit={handleSubmit} className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div className="space-y-2">
-              <Input name="name" placeholder="Name" className="h-12" required />
+        <div className="bg-card shadow-lg rounded-lg p-6 md:p-8 border border-border/50">
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <label htmlFor="name" className="text-sm font-medium">Name</label>
+                <Input id="name" name="name" placeholder="Your name" className="h-12" required />
+              </div>
+              <div className="space-y-2">
+                <label htmlFor="email" className="text-sm font-medium">Email</label>
+                <Input id="email" name="email" type="email" placeholder="Your email" className="h-12" required />
+              </div>
             </div>
             <div className="space-y-2">
-              <Input name="email" type="email" placeholder="Email" className="h-12" required />
+              <label htmlFor="subject" className="text-sm font-medium">Subject</label>
+              <Input id="subject" name="subject" placeholder="Subject of your message" className="h-12" required />
             </div>
-          </div>
-          <div className="space-y-2">
-            <Input name="subject" placeholder="Subject" className="h-12" required />
-          </div>
-          <div className="space-y-2">
-            <Textarea name="message" placeholder="Message" className="min-h-[150px]" required />
-          </div>
-          <Button type="submit" size="lg" className="w-full md:w-auto" disabled={isLoading}>
-            {isLoading ? "Sending..." : "Send Message"}
-          </Button>
-        </form>
+            <div className="space-y-2">
+              <label htmlFor="message" className="text-sm font-medium">Message</label>
+              <Textarea id="message" name="message" placeholder="Your message" className="min-h-[150px]" required />
+            </div>
+            <Button type="submit" size="lg" className="w-full md:w-auto" disabled={isLoading}>
+              {isLoading ? "Sending..." : (
+                <>
+                  Send Message
+                  <Send className="ml-2 h-4 w-4" />
+                </>
+              )}
+            </Button>
+          </form>
+        </div>
       </div>
     </section>
   );

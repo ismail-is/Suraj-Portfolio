@@ -1,7 +1,11 @@
 
+import { useState } from "react";
 import { Link } from "react-router-dom";
+import { Menu, X } from "lucide-react";
 
 export const Navbar = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const scrollToSection = (sectionId: string) => {
     // If we're not on the home page, navigate there first
     if (!window.location.pathname.startsWith('/#')) {
@@ -11,6 +15,7 @@ export const Navbar = () => {
     
     const element = document.getElementById(sectionId);
     element?.scrollIntoView({ behavior: 'smooth' });
+    setIsMenuOpen(false);
   };
 
   return (
@@ -27,7 +32,9 @@ export const Navbar = () => {
             </div>
             <span className="text-xl font-bold">Suraj Poojari</span>
           </Link>
-          <div className="space-x-6">
+          
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex space-x-6">
             <button 
               onClick={() => scrollToSection('hero')} 
               className="hover:text-primary transition-colors"
@@ -59,7 +66,52 @@ export const Navbar = () => {
               Contact
             </button>
           </div>
+          
+          {/* Mobile menu button */}
+          <button 
+            className="md:hidden text-foreground"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
+        
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="md:hidden py-4 flex flex-col space-y-4 animate-fade-in">
+            <button 
+              onClick={() => scrollToSection('hero')} 
+              className="py-2 hover:text-primary transition-colors"
+            >
+              Home
+            </button>
+            <button 
+              onClick={() => scrollToSection('services')} 
+              className="py-2 hover:text-primary transition-colors"
+            >
+              Services
+            </button>
+            <button 
+              onClick={() => scrollToSection('blog')} 
+              className="py-2 hover:text-primary transition-colors"
+            >
+              Blog
+            </button>
+            <Link 
+              to="/portfolio" 
+              className="py-2 hover:text-primary transition-colors"
+              onClick={() => setIsMenuOpen(false)}
+            >
+              Portfolio
+            </Link>
+            <button 
+              onClick={() => scrollToSection('contact')} 
+              className="py-2 hover:text-primary transition-colors"
+            >
+              Contact
+            </button>
+          </div>
+        )}
       </div>
     </nav>
   );
