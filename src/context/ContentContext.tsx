@@ -17,6 +17,10 @@ export type PostContent = {
   image: string;
 };
 
+// Default empty arrays for content
+export const defaultVideos: VideoContent[] = [];
+export const defaultPosts: PostContent[] = [];
+
 type ContentContextType = {
   videos: VideoContent[];
   posts: PostContent[];
@@ -29,8 +33,8 @@ type ContentContextType = {
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
 
 export const ContentProvider = ({ children }: { children: React.ReactNode }) => {
-  const [videos, setVideos] = useState<VideoContent[]>([]);
-  const [posts, setPosts] = useState<PostContent[]>([]);
+  const [videos, setVideos] = useState<VideoContent[]>(defaultVideos);
+  const [posts, setPosts] = useState<PostContent[]>(defaultPosts);
 
   useEffect(() => {
     // Load saved content on page load
@@ -39,16 +43,24 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
 
     if (savedVideos) {
       setVideos(JSON.parse(savedVideos));
+      // Update the default videos for future use
+      Object.assign(defaultVideos, JSON.parse(savedVideos));
     }
 
     if (savedPosts) {
       setPosts(JSON.parse(savedPosts));
+      // Update the default posts for future use
+      Object.assign(defaultPosts, JSON.parse(savedPosts));
     }
   }, []);
 
   const saveToLocalStorage = (videosData: VideoContent[], postsData: PostContent[]) => {
     localStorage.setItem('dashboardVideos', JSON.stringify(videosData));
     localStorage.setItem('dashboardPosts', JSON.stringify(postsData));
+    
+    // Update the default arrays for future component instances
+    Object.assign(defaultVideos, videosData);
+    Object.assign(defaultPosts, postsData);
   };
 
   const addVideo = (video: VideoContent) => {

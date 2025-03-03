@@ -4,7 +4,7 @@ import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
 import { Play, X } from "lucide-react";
-import { VideoContent, PostContent } from "@/context/ContentContext";
+import { VideoContent, PostContent, useContent, defaultVideos, defaultPosts } from "@/context/ContentContext";
 
 const skills = [
   { name: "Content Strategy", level: 90 },
@@ -15,56 +15,6 @@ const skills = [
   { name: "Video Production", level: 80 }
 ];
 
-// Sample video projects stored as variables
-const sampleVideos: VideoContent[] = [
-  {
-    id: "dQw4w9WgXcQ",
-    title: "Brand Strategy Walkthrough",
-    description: "A comprehensive guide to developing an effective brand strategy",
-    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
-    thumbnail: "https://img.youtube.com/vi/dQw4w9WgXcQ/maxresdefault.jpg",
-    isShort: false
-  },
-  {
-    id: "KYz2wyBy3kc",
-    title: "Social Media Marketing Tips",
-    description: "Essential tips for growing your brand on social media",
-    url: "https://www.youtube.com/watch?v=KYz2wyBy3kc",
-    thumbnail: "https://img.youtube.com/vi/KYz2wyBy3kc/maxresdefault.jpg",
-    isShort: false
-  },
-  {
-    id: "Tn6-PIqc4UM",
-    title: "Content Creation Basics",
-    description: "Learn the fundamentals of creating engaging content",
-    url: "https://www.youtube.com/watch?v=Tn6-PIqc4UM",
-    thumbnail: "https://img.youtube.com/vi/Tn6-PIqc4UM/maxresdefault.jpg",
-    isShort: true
-  }
-];
-
-// Sample post projects stored as variables
-const samplePosts: PostContent[] = [
-  {
-    id: 1,
-    title: "Effective Email Marketing Campaign",
-    description: "A case study on designing effective email marketing campaigns",
-    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-  },
-  {
-    id: 2,
-    title: "Instagram Growth Strategy",
-    description: "How I helped a client grow their Instagram following by 200%",
-    image: "https://images.unsplash.com/photo-1611162617213-7d7a39e9b1d7?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-  },
-  {
-    id: 3,
-    title: "Brand Identity Redesign",
-    description: "A complete overhaul of a company's visual identity",
-    image: "https://images.unsplash.com/photo-1581291518633-83b4ebd1d83e?ixlib=rb-1.2.1&auto=format&fit=crop&w=1350&q=80"
-  }
-];
-
 const Portfolio = () => {
   const [filter, setFilter] = useState("all");
   const [dashboardPosts, setDashboardPosts] = useState<PostContent[]>([]);
@@ -73,51 +23,44 @@ const Portfolio = () => {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [activeVideoIsShort, setActiveVideoIsShort] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
+  
+  // Use the content context to access shared content
+  const { videos: contextVideos, posts: contextPosts } = useContent();
 
   useEffect(() => {
-    // Initialize with sample data
-    setDashboardVideos(sampleVideos);
-    setDashboardPosts(samplePosts);
-    setIsLoading(false);
-    
-    // Also check localStorage for any user-added content
+    // Load content either from context or localStorage
     const loadDashboardContent = () => {
+      // First, try to use content from the context
+      if (contextVideos.length > 0 || contextPosts.length > 0) {
+        setDashboardVideos(contextVideos);
+        setDashboardPosts(contextPosts);
+        setIsLoading(false);
+        return;
+      }
+      
+      // Fallback to localStorage if context is empty
       const savedVideos = localStorage.getItem('dashboardVideos');
       const savedPosts = localStorage.getItem('dashboardPosts');
       
       if (savedVideos) {
-        // Merge sample videos with saved videos, avoiding duplicates
-        const parsedVideos = JSON.parse(savedVideos);
-        const combinedVideos = [...sampleVideos];
-        
-        parsedVideos.forEach((video: VideoContent) => {
-          if (!combinedVideos.some(v => v.id === video.id)) {
-            combinedVideos.push(video);
-          }
-        });
-        
-        setDashboardVideos(combinedVideos);
+        setDashboardVideos(JSON.parse(savedVideos));
+      } else {
+        // Use default videos from context if available
+        setDashboardVideos(defaultVideos);
       }
       
       if (savedPosts) {
-        // Merge sample posts with saved posts, avoiding duplicates
-        const parsedPosts = JSON.parse(savedPosts);
-        const combinedPosts = [...samplePosts];
-        
-        parsedPosts.forEach((post: PostContent) => {
-          if (!combinedPosts.some(p => p.id === post.id)) {
-            combinedPosts.push(post);
-          }
-        });
-        
-        setDashboardPosts(combinedPosts);
+        setDashboardPosts(JSON.parse(savedPosts));
+      } else {
+        // Use default posts from context if available
+        setDashboardPosts(defaultPosts);
       }
       
       setIsLoading(false);
     };
     
     loadDashboardContent();
-  }, []);
+  }, [contextVideos, contextPosts]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
