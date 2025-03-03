@@ -1,3 +1,4 @@
+
 import { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
@@ -15,72 +16,6 @@ const skills = [
   { name: "Video Production", level: 80 }
 ];
 
-const fallbackPosts = [
-  {
-    id: 1,
-    title: "Brand Awareness Campaign",
-    description: "Social media strategy and execution for a tech startup",
-    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?auto=format&fit=crop&q=80&w=800",
-    category: "post"
-  },
-  {
-    id: 2,
-    title: "Social Media Marketing Strategy",
-    description: "Comprehensive strategy for increasing engagement on Instagram",
-    image: "https://images.unsplash.com/photo-1432888622747-4eb9a8f1c28c?auto=format&fit=crop&q=80&w=800",
-    category: "post"
-  },
-  {
-    id: 3,
-    title: "Holiday Campaign for Fashion Brand",
-    description: "Seasonal marketing campaign with 40% increase in sales",
-    image: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&q=80&w=800",
-    category: "post"
-  },
-  {
-    id: 4,
-    title: "Restaurant Social Media Revamp",
-    description: "Content strategy that increased foot traffic by 25%",
-    image: "https://images.unsplash.com/photo-1457369804613-52c61a468e7d?auto=format&fit=crop&q=80&w=800",
-    category: "post"
-  }
-];
-
-const fallbackVideos = [
-  {
-    id: "hGANiQBgxNk",
-    title: "Marketing Short",
-    description: "Quick marketing tips and tricks",
-    thumbnail: "https://i.ytimg.com/vi/hGANiQBgxNk/hqdefault.jpg",
-    category: "video",
-    isShort: true
-  },
-  {
-    id: "dQw4w9WgXcQ",
-    title: "Product Launch Video",
-    description: "Promotional video for new product launch",
-    thumbnail: "https://images.unsplash.com/photo-1492724441997-5dc865305da7?auto=format&fit=crop&q=80&w=800",
-    category: "video"
-  },
-  {
-    id: "5qap5aO4i9A",
-    title: "Brand Story Video",
-    description: "Company culture and values showcase",
-    thumbnail: "https://images.unsplash.com/photo-1493612276216-ee3925520721?auto=format&fit=crop&q=80&w=800",
-    category: "video"
-  }
-];
-
-interface Project {
-  id: string | number;
-  title: string;
-  description: string;
-  category: string;
-  image?: string;
-  thumbnail?: string;
-  isShort?: boolean;
-}
-
 const Portfolio = () => {
   const [filter, setFilter] = useState("all");
   const [dashboardPosts, setDashboardPosts] = useState<PostContent[]>([]);
@@ -89,7 +24,6 @@ const Portfolio = () => {
   const [activeVideo, setActiveVideo] = useState<string | null>(null);
   const [activeVideoIsShort, setActiveVideoIsShort] = useState(false);
   const modalRef = useRef<HTMLDivElement>(null);
-  const playlistId = "PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn";
 
   useEffect(() => {
     const loadDashboardContent = () => {
@@ -126,25 +60,21 @@ const Portfolio = () => {
     };
   }, [activeVideo]);
   
-  const postProjects = dashboardPosts.length > 0 
-    ? dashboardPosts.map(post => ({
-        ...post,
-        category: "post"
-      }))
-    : fallbackPosts;
+  const postProjects = dashboardPosts.map(post => ({
+    ...post,
+    category: "post"
+  }));
   
-  const videoProjects = dashboardVideos.length > 0
-    ? dashboardVideos.map(video => ({
-        id: video.id,
-        title: video.title,
-        description: video.description,
-        thumbnail: video.thumbnail,
-        category: "video",
-        isShort: video.isShort
-      }))
-    : fallbackVideos;
+  const videoProjects = dashboardVideos.map(video => ({
+    id: video.id,
+    title: video.title,
+    description: video.description,
+    thumbnail: video.thumbnail,
+    category: "video",
+    isShort: video.isShort
+  }));
 
-  const allProjects: Project[] = [
+  const allProjects = [
     ...postProjects.map(post => ({
       id: post.id,
       title: post.title,
@@ -176,7 +106,7 @@ const Portfolio = () => {
     setActiveVideoIsShort(false);
   };
 
-  const getImageSource = (project: Project): string => {
+  const getImageSource = (project: any): string => {
     if (project.category === "video") {
       return project.thumbnail || '';
     } else {
@@ -231,22 +161,25 @@ const Portfolio = () => {
           <div className="max-w-6xl mx-auto">
             <h2 className="text-3xl font-bold text-center mb-12">My Work</h2>
             
-            <div className="flex justify-center gap-4 mb-12">
+            <div className="flex flex-wrap justify-center gap-4 mb-12">
               <Button 
                 variant={filter === "all" ? "default" : "outline"}
                 onClick={() => setFilter("all")}
+                className="mb-2"
               >
                 All
               </Button>
               <Button 
                 variant={filter === "post" ? "default" : "outline"}
                 onClick={() => setFilter("post")}
+                className="mb-2"
               >
                 Post Concepts
               </Button>
               <Button 
                 variant={filter === "video" ? "default" : "outline"}
                 onClick={() => setFilter("video")}
+                className="mb-2"
               >
                 Video Concepts
               </Button>
@@ -259,11 +192,17 @@ const Portfolio = () => {
               </div>
             )}
 
+            {!isLoading && filteredProjects.length === 0 && (
+              <div className="text-center py-12">
+                <p className="text-muted-foreground">No projects found. Add projects through the dashboard.</p>
+              </div>
+            )}
+
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
               {filteredProjects.map((project) => (
                 <div 
                   key={project.id.toString()} 
-                  className="group relative overflow-hidden rounded-lg cursor-pointer"
+                  className="group relative overflow-hidden rounded-lg cursor-pointer shadow-md"
                   onClick={() => {
                     if (project.category === "video") {
                       handleVideoClick(project.id.toString(), project.isShort);
@@ -274,7 +213,11 @@ const Portfolio = () => {
                     <img 
                       src={getImageSource(project)}
                       alt={project.title}
-                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                      className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        target.src = "https://via.placeholder.com/320x180?text=Image+Not+Found";
+                      }}
                     />
                     {project.category === "video" && (
                       <div className="absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
@@ -291,69 +234,44 @@ const Portfolio = () => {
                 </div>
               ))}
             </div>
-            
-            {filteredProjects.length === 0 && !isLoading && (
-              <div className="text-center py-12">
-                <p className="text-muted-foreground">No projects found for the selected category.</p>
-              </div>
-            )}
-
-            {(filter === "all" || filter === "video") && (
-              <div className="mt-16">
-                <h3 className="text-2xl font-bold text-center mb-8">My YouTube Playlist</h3>
-                <div className="relative overflow-hidden rounded-lg w-full max-w-4xl mx-auto">
-                  <iframe 
-                    width="560" 
-                    height="315" 
-                    src="https://www.youtube.com/embed/videoseries?list=PLdrmjkKeIQRUbyVx57ENOUvin_zGwKADn" 
-                    title="YouTube video player" 
-                    frameBorder="0" 
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" 
-                    referrerPolicy="strict-origin-when-cross-origin" 
-                    allowFullScreen
-                    className="w-full aspect-video"
-                  ></iframe>
-                </div>
-              </div>
-            )}
-
-            {activeVideo && (
-              <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
-                <div 
-                  ref={modalRef} 
-                  className={`relative bg-white rounded-lg overflow-hidden ${activeVideoIsShort ? 'w-[350px] max-w-full' : 'w-full max-w-4xl'}`}
-                >
-                  <Button 
-                    variant="ghost" 
-                    size="icon"
-                    className="absolute top-2 right-2 z-10 bg-white/10 text-white hover:bg-white/20"
-                    onClick={closeVideoModal}
-                  >
-                    <X className="h-5 w-5" />
-                  </Button>
-                  <div className={activeVideoIsShort ? 'aspect-[9/16] w-full' : 'aspect-video w-full'}>
-                    <iframe 
-                      src={`https://www.youtube.com/embed/${activeVideo}?autoplay=1&rel=0`}
-                      title="YouTube video player"
-                      className="w-full h-full"
-                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                      allowFullScreen
-                    ></iframe>
-                  </div>
-                  <div className="p-4 bg-white">
-                    <h3 className="text-xl font-bold mb-2">
-                      {videoProjects.find(v => v.id === activeVideo)?.title || "Marketing Video"}
-                    </h3>
-                    <p className="text-muted-foreground">
-                      {videoProjects.find(v => v.id === activeVideo)?.description || "Video description"}
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
           </div>
         </section>
       </main>
+
+      {activeVideo && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <div 
+            ref={modalRef} 
+            className={`relative bg-white rounded-lg overflow-hidden ${activeVideoIsShort ? 'w-[350px] max-w-full' : 'w-full max-w-4xl'}`}
+          >
+            <Button 
+              variant="ghost" 
+              size="icon"
+              className="absolute top-2 right-2 z-10 bg-white/10 text-white hover:bg-white/20"
+              onClick={closeVideoModal}
+            >
+              <X className="h-5 w-5" />
+            </Button>
+            <div className={activeVideoIsShort ? 'aspect-[9/16] w-full' : 'aspect-video w-full'}>
+              <iframe 
+                src={`https://www.youtube.com/embed/${activeVideo}?autoplay=1&rel=0`}
+                title="YouTube video player"
+                className="w-full h-full"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              ></iframe>
+            </div>
+            <div className="p-4 bg-white">
+              <h3 className="text-xl font-bold mb-2">
+                {videoProjects.find(v => v.id === activeVideo)?.title || "Marketing Video"}
+              </h3>
+              <p className="text-muted-foreground">
+                {videoProjects.find(v => v.id === activeVideo)?.description || "Video description"}
+              </p>
+            </div>
+          </div>
+        </div>
+      )}
       <Footer />
     </>
   );

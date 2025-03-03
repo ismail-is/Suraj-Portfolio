@@ -3,4 +3,18 @@
 #root {
   width: 100%;
   margin: 0 auto;
+  padding: 0;
+}
+
+/* Fix alignment issues */
+.container {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+}
+
+/* Ensure full width content */
+main {
+  width: 100%;
 }
