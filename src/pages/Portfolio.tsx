@@ -3,7 +3,6 @@ import { useState, useEffect, useRef } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/hooks/use-toast";
 import { Play, X } from "lucide-react";
 import { VideoContent, PostContent } from "@/context/ContentContext";
 
@@ -60,37 +59,44 @@ const Portfolio = () => {
     };
   }, [activeVideo]);
   
-  const postProjects = dashboardPosts.map(post => ({
-    ...post,
+  // Define project types with proper typing
+  type PostProject = {
+    id: number;
+    title: string;
+    description: string;
+    image: string;
+    category: string;
+  };
+  
+  type VideoProject = {
+    id: string;
+    title: string;
+    description: string;
+    thumbnail: string;
+    category: string;
+    isShort: boolean;
+  };
+  
+  type Project = PostProject | VideoProject;
+  
+  const postProjects: PostProject[] = dashboardPosts.map(post => ({
+    id: post.id,
+    title: post.title,
+    description: post.description,
+    image: post.image,
     category: "post"
   }));
   
-  const videoProjects = dashboardVideos.map(video => ({
+  const videoProjects: VideoProject[] = dashboardVideos.map(video => ({
     id: video.id,
     title: video.title,
     description: video.description,
     thumbnail: video.thumbnail,
     category: "video",
-    isShort: video.isShort
+    isShort: video.isShort || false
   }));
 
-  const allProjects = [
-    ...postProjects.map(post => ({
-      id: post.id,
-      title: post.title,
-      description: post.description,
-      image: post.image,
-      category: "post"
-    })),
-    ...videoProjects.map(video => ({
-      id: video.id,
-      title: video.title,
-      description: video.description,
-      thumbnail: video.thumbnail,
-      category: "video",
-      isShort: video.isShort
-    }))
-  ];
+  const allProjects: Project[] = [...postProjects, ...videoProjects];
   
   const filteredProjects = allProjects.filter(project => 
     filter === "all" ? true : project.category === filter
@@ -106,12 +112,16 @@ const Portfolio = () => {
     setActiveVideoIsShort(false);
   };
 
-  const getImageSource = (project: any): string => {
+  const getImageSource = (project: Project): string => {
     if (project.category === "video") {
-      return project.thumbnail || '';
+      return (project as VideoProject).thumbnail || '';
     } else {
-      return project.image || '';
+      return (project as PostProject).image || '';
     }
+  };
+
+  const isVideoProject = (project: Project): project is VideoProject => {
+    return project.category === "video";
   };
 
   return (
@@ -204,7 +214,7 @@ const Portfolio = () => {
                   key={project.id.toString()} 
                   className="group relative overflow-hidden rounded-lg cursor-pointer shadow-md"
                   onClick={() => {
-                    if (project.category === "video") {
+                    if (isVideoProject(project)) {
                       handleVideoClick(project.id.toString(), project.isShort);
                     }
                   }}
@@ -219,7 +229,7 @@ const Portfolio = () => {
                         target.src = "https://via.placeholder.com/320x180?text=Image+Not+Found";
                       }}
                     />
-                    {project.category === "video" && (
+                    {isVideoProject(project) && (
                       <div className="absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
                         <div className="bg-primary text-white rounded-full p-3">
                           <Play className="h-6 w-6" />
