@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect } from 'react';
 import { fetchVideos, fetchPosts } from '@/utils/googleSheetsUtils';
 
@@ -18,7 +17,6 @@ export type PostContent = {
   image: string;
 };
 
-// Default empty arrays for content
 export const defaultVideos: VideoContent[] = [];
 export const defaultPosts: PostContent[] = [];
 
@@ -43,14 +41,12 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
   const refreshContent = async () => {
     setIsLoading(true);
     try {
-      // Fetch fresh data from Google Sheets
       const fetchedVideos = await fetchVideos();
       const fetchedPosts = await fetchPosts();
       
       setVideos(fetchedVideos);
       setPosts(fetchedPosts);
       
-      // Update localStorage with the latest data
       localStorage.setItem('dashboardVideos', JSON.stringify(fetchedVideos));
       localStorage.setItem('dashboardPosts', JSON.stringify(fetchedPosts));
       
@@ -66,7 +62,6 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
   };
 
   useEffect(() => {
-    // Try to load from localStorage first for faster initial load
     const savedVideos = localStorage.getItem('dashboardVideos');
     const savedPosts = localStorage.getItem('dashboardPosts');
 
@@ -75,10 +70,8 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
       setPosts(JSON.parse(savedPosts));
       setIsLoading(false);
       
-      // Then refresh in the background
       refreshContent();
     } else {
-      // If no data in localStorage, fetch from Google Sheets
       refreshContent();
     }
   }, []);

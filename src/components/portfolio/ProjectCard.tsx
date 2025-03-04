@@ -1,7 +1,6 @@
-
 import React from "react";
 import { Play } from "lucide-react";
-import { Project, VideoProject } from "./ProjectTypes";
+import { Project, VideoProject, PostProject } from "./ProjectTypes";
 
 type ProjectCardProps = {
   project: Project;
