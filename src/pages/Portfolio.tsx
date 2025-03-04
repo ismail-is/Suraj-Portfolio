@@ -2,7 +2,7 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { VideoContent, PostContent, useContent } from "@/context/ContentContext";
+import { useContent } from "@/context/ContentContext";
 import { AboutSection } from "@/components/portfolio/AboutSection";
 import { ProjectsSection } from "@/components/portfolio/ProjectsSection";
 import { VideoProject, PostProject } from "@/components/portfolio/ProjectTypes";
@@ -11,16 +11,16 @@ const Portfolio = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   // Use the content context to access shared content
-  const { videos, posts } = useContent();
+  const { videos, posts, isLoading: contentLoading } = useContent();
 
   useEffect(() => {
-    // Short timeout to simulate loading and prevent layout shifts
+    // Use the loading state from the context, with a short delay to prevent layout shifts
     const timer = setTimeout(() => {
-      setIsLoading(false);
+      setIsLoading(contentLoading);
     }, 300);
     
     return () => clearTimeout(timer);
-  }, []);
+  }, [contentLoading]);
   
   const postProjects: PostProject[] = posts.map(post => ({
     id: post.id,
@@ -42,7 +42,7 @@ const Portfolio = () => {
   return (
     <>
       <Navbar />
-      <main className="pt-20 pb-12">
+      <main className="pt-16 md:pt-20 pb-10 md:pb-12">
         <AboutSection />
         <ProjectsSection 
           isLoading={isLoading}

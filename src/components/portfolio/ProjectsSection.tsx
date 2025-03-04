@@ -33,22 +33,22 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
   };
 
   return (
-    <section className="py-12 sm:py-16 px-4">
+    <section className="py-8 sm:py-12 px-4">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">My Work</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-6 sm:mb-10">My Work</h2>
         
         <FilterButtons filter={filter} setFilter={setFilter} />
 
         {isLoading && (
-          <div className="text-center py-12">
+          <div className="text-center py-10">
             <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
             <p className="mt-4 text-muted-foreground">Loading projects...</p>
           </div>
         )}
 
         {!isLoading && filteredProjects.length === 0 && (
-          <div className="text-center py-12">
-            <p className="text-muted-foreground">No projects found. Add projects through the dashboard.</p>
+          <div className="text-center py-10">
+            <p className="text-muted-foreground">No projects found. Add projects through the dashboard or update your Google Sheet.</p>
           </div>
         )}
 

@@ -38,15 +38,15 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
         />
         {isVideoProject(project) && (
           <div className="absolute inset-0 flex items-center justify-center opacity-70 group-hover:opacity-100 transition-opacity">
-            <div className="bg-primary text-white rounded-full p-3">
-              <Play className="h-6 w-6" />
+            <div className="bg-primary text-white rounded-full p-2 sm:p-3">
+              <Play className="h-5 w-5 sm:h-6 sm:w-6" />
             </div>
           </div>
         )}
       </div>
-      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-6">
-        <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-        {project.description && <p className="text-center">{project.description}</p>}
+      <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-3 sm:p-6">
+        <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2 text-center">{project.title}</h3>
+        {project.description && <p className="text-sm text-center line-clamp-3">{project.description}</p>}
       </div>
     </div>
   );
