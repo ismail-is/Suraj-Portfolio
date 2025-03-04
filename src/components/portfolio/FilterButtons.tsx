@@ -9,28 +9,25 @@ type FilterButtonsProps = {
 
 export const FilterButtons = ({ filter, setFilter }: FilterButtonsProps) => {
   return (
-    <div className="flex flex-wrap justify-center gap-3 mb-6 sm:mb-10">
+    <div className="flex flex-wrap justify-center gap-4 mb-12">
       <Button 
         variant={filter === "all" ? "default" : "outline"}
         onClick={() => setFilter("all")}
-        size="sm"
-        className="text-sm px-3 sm:px-4"
+        className="mb-2"
       >
         All
       </Button>
       <Button 
         variant={filter === "post" ? "default" : "outline"}
         onClick={() => setFilter("post")}
-        size="sm"
-        className="text-sm px-3 sm:px-4"
+        className="mb-2"
       >
         Post Concepts
       </Button>
       <Button 
         variant={filter === "video" ? "default" : "outline"}
         onClick={() => setFilter("video")}
-        size="sm"
-        className="text-sm px-3 sm:px-4"
+        className="mb-2"
       >
         Video Concepts
       </Button>

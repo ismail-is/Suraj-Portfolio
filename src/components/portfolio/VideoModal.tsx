@@ -21,34 +21,20 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
       }
     };
 
-    const handleEscapeKey = (event: KeyboardEvent) => {
-      if (event.key === 'Escape') {
-        onClose();
-      }
-    };
-
     document.addEventListener('mousedown', handleClickOutside);
-    document.addEventListener('keydown', handleEscapeKey);
-    
-    // Prevent body scrolling when modal is open
-    document.body.style.overflow = 'hidden';
     
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
-      document.removeEventListener('keydown', handleEscapeKey);
-      document.body.style.overflow = '';
     };
   }, [onClose]);
 
   const currentVideo = videoProjects.find(v => v.id === videoId);
 
   return (
-    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-3 sm:p-4">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
       <div 
         ref={modalRef} 
-        className={`relative bg-white rounded-lg overflow-hidden ${
-          isShort ? 'w-[90%] max-w-[350px]' : 'w-[95%] sm:w-full max-w-4xl'
-        }`}
+        className={`relative bg-white rounded-lg overflow-hidden ${isShort ? 'w-[350px] max-w-full' : 'w-full max-w-4xl'}`}
       >
         <Button 
           variant="ghost" 
@@ -67,15 +53,13 @@ export const VideoModal = ({ videoId, isShort, onClose, videoProjects }: VideoMo
             allowFullScreen
           ></iframe>
         </div>
-        <div className="p-3 sm:p-4 bg-white">
-          <h3 className="text-lg sm:text-xl font-bold mb-1 sm:mb-2">
+        <div className="p-4 bg-white">
+          <h3 className="text-xl font-bold mb-2">
             {currentVideo?.title || "Marketing Video"}
           </h3>
-          {currentVideo?.description && (
-            <p className="text-sm text-muted-foreground">
-              {currentVideo.description}
-            </p>
-          )}
+          <p className="text-muted-foreground">
+            {currentVideo?.description || "Video description"}
+          </p>
         </div>
       </div>
     </div>
