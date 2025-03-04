@@ -1,10 +1,31 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
 
+// Initial data that will be visible to all users
+const initialVideos = [
+  {
+    id: "sample-video-1",
+    title: "Marketing Strategy Overview",
+    description: "A comprehensive guide to digital marketing strategies for 2023",
+    url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+    thumbnail: "https://via.placeholder.com/320x180?text=Marketing+Strategy",
+    isShort: false
+  }
+];
+
+const initialPosts = [
+  {
+    id: 1,
+    title: "Social Media Best Practices",
+    description: "Learn how to optimize your social media presence",
+    image: "https://via.placeholder.com/320x180?text=Social+Media"
+  }
+];
+
 export type VideoContent = {
   id: string;
   title: string;
-  description: string;
+  description?: string;
   url: string;
   thumbnail: string;
   isShort?: boolean;
@@ -13,13 +34,13 @@ export type VideoContent = {
 export type PostContent = {
   id: number;
   title: string;
-  description: string;
+  description?: string;
   image: string;
 };
 
-// Default empty arrays for content
-export const defaultVideos: VideoContent[] = [];
-export const defaultPosts: PostContent[] = [];
+// Default collections with initial data
+export const defaultVideos: VideoContent[] = [...initialVideos];
+export const defaultPosts: PostContent[] = [...initialPosts];
 
 type ContentContextType = {
   videos: VideoContent[];
@@ -28,6 +49,8 @@ type ContentContextType = {
   addPost: (post: PostContent) => void;
   removeVideo: (id: string) => void;
   removePost: (id: number) => void;
+  updateVideo: (video: VideoContent) => void;
+  updatePost: (post: PostContent) => void;
 };
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
@@ -43,24 +66,16 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
 
     if (savedVideos) {
       setVideos(JSON.parse(savedVideos));
-      // Update the default videos for future use
-      Object.assign(defaultVideos, JSON.parse(savedVideos));
     }
 
     if (savedPosts) {
       setPosts(JSON.parse(savedPosts));
-      // Update the default posts for future use
-      Object.assign(defaultPosts, JSON.parse(savedPosts));
     }
   }, []);
 
   const saveToLocalStorage = (videosData: VideoContent[], postsData: PostContent[]) => {
     localStorage.setItem('dashboardVideos', JSON.stringify(videosData));
     localStorage.setItem('dashboardPosts', JSON.stringify(postsData));
-    
-    // Update the default arrays for future component instances
-    Object.assign(defaultVideos, videosData);
-    Object.assign(defaultPosts, postsData);
   };
 
   const addVideo = (video: VideoContent) => {
@@ -87,8 +102,33 @@ export const ContentProvider = ({ children }: { children: React.ReactNode }) => 
     saveToLocalStorage(videos, updatedPosts);
   };
 
+  const updateVideo = (updatedVideo: VideoContent) => {
+    const updatedVideos = videos.map(video => 
+      video.id === updatedVideo.id ? updatedVideo : video
+    );
+    setVideos(updatedVideos);
+    saveToLocalStorage(updatedVideos, posts);
+  };
+
+  const updatePost = (updatedPost: PostContent) => {
+    const updatedPosts = posts.map(post => 
+      post.id === updatedPost.id ? updatedPost : post
+    );
+    setPosts(updatedPosts);
+    saveToLocalStorage(videos, updatedPosts);
+  };
+
   return (
-    <ContentContext.Provider value={{ videos, posts, addVideo, addPost, removeVideo, removePost }}>
+    <ContentContext.Provider value={{ 
+      videos, 
+      posts, 
+      addVideo, 
+      addPost, 
+      removeVideo, 
+      removePost,
+      updateVideo,
+      updatePost
+    }}>
       {children}
     </ContentContext.Provider>
   );

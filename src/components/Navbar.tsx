@@ -20,17 +20,17 @@ export const Navbar = () => {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b">
-      <div className="max-w-6xl mx-auto px-4 py-4">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3">
         <div className="flex items-center justify-between">
           <Link to="/" className="flex items-center space-x-2">
-            <div className="w-10 h-10 rounded-lg overflow-hidden">
+            <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-lg overflow-hidden">
               <img 
                 src="https://i.pinimg.com/736x/83/6c/d2/836cd27d3bf3d81122d089088f60d60f.jpg" 
                 alt="Digital Marketing Icon" 
                 className="w-full h-full object-cover"
               />
             </div>
-            <span className="text-xl font-bold">Suraj Poojari</span>
+            <span className="text-lg sm:text-xl font-bold">Suraj Poojari</span>
           </Link>
           
           {/* Desktop Navigation */}
@@ -71,6 +71,7 @@ export const Navbar = () => {
           <button 
             className="md:hidden text-foreground"
             onClick={() => setIsMenuOpen(!isMenuOpen)}
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
@@ -78,7 +79,7 @@ export const Navbar = () => {
         
         {/* Mobile Navigation */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 flex flex-col space-y-4 animate-fade-in">
+          <div className="md:hidden py-4 flex flex-col space-y-3 animate-fade-in">
             <button 
               onClick={() => scrollToSection('hero')} 
               className="py-2 hover:text-primary transition-colors"

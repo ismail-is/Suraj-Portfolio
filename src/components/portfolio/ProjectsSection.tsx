@@ -33,9 +33,9 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
   };
 
   return (
-    <section className="py-20 px-4">
+    <section className="py-12 sm:py-16 px-4">
       <div className="max-w-6xl mx-auto">
-        <h2 className="text-3xl font-bold text-center mb-12">My Work</h2>
+        <h2 className="text-2xl sm:text-3xl font-bold text-center mb-8 sm:mb-12">My Work</h2>
         
         <FilterButtons filter={filter} setFilter={setFilter} />
 
@@ -52,7 +52,7 @@ export const ProjectsSection = ({ isLoading, videoProjects, postProjects }: Proj
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mt-6">
           {filteredProjects.map((project) => (
             <ProjectCard 
               key={project.id.toString()} 

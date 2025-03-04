@@ -1,7 +1,7 @@
 
 import React from "react";
 import { Play } from "lucide-react";
-import { Project, VideoProject } from "./ProjectTypes";
+import { Project, VideoProject, PostProject } from "./ProjectTypes";
 
 type ProjectCardProps = {
   project: Project;
@@ -46,7 +46,7 @@ export const ProjectCard = ({ project, onClick }: ProjectCardProps) => {
       </div>
       <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-center items-center text-white p-6">
         <h3 className="text-xl font-bold mb-2">{project.title}</h3>
-        <p className="text-center">{project.description}</p>
+        {project.description && <p className="text-center">{project.description}</p>}
       </div>
     </div>
   );
