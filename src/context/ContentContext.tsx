@@ -1,5 +1,6 @@
 
 import React, { createContext, useContext, useState, useEffect } from 'react';
+import { fetchVideos, fetchPosts } from '@/utils/googleSheetsUtils';
 
 export type VideoContent = {
   id: string;
@@ -28,67 +29,97 @@ type ContentContextType = {
   addPost: (post: PostContent) => void;
   removeVideo: (id: string) => void;
   removePost: (id: number) => void;
+  isLoading: boolean;
+  refreshContent: () => Promise<void>;
 };
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined);
 
 export const ContentProvider = ({ children }: { children: React.ReactNode }) => {
-  const [videos, setVideos] = useState<VideoContent[]>(defaultVideos);
-  const [posts, setPosts] = useState<PostContent[]>(defaultPosts);
+  const [videos, setVideos] = useState<VideoContent[]>([]);
+  const [posts, setPosts] = useState<PostContent[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const refreshContent = async () => {
+    setIsLoading(true);
+    try {
+      // Fetch fresh data from Google Sheets
+      const fetchedVideos = await fetchVideos();
+      const fetchedPosts = await fetchPosts();
+      
+      setVideos(fetchedVideos);
+      setPosts(fetchedPosts);
+      
+      // Update localStorage with the latest data
+      localStorage.setItem('dashboardVideos', JSON.stringify(fetchedVideos));
+      localStorage.setItem('dashboardPosts', JSON.stringify(fetchedPosts));
+      
+      console.log("Content refreshed from Google Sheets", {
+        videos: fetchedVideos.length,
+        posts: fetchedPosts.length
+      });
+    } catch (error) {
+      console.error("Failed to refresh content:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   useEffect(() => {
-    // Load saved content on page load
+    // Try to load from localStorage first for faster initial load
     const savedVideos = localStorage.getItem('dashboardVideos');
     const savedPosts = localStorage.getItem('dashboardPosts');
 
-    if (savedVideos) {
+    if (savedVideos && savedPosts) {
       setVideos(JSON.parse(savedVideos));
-      // Update the default videos for future use
-      Object.assign(defaultVideos, JSON.parse(savedVideos));
-    }
-
-    if (savedPosts) {
       setPosts(JSON.parse(savedPosts));
-      // Update the default posts for future use
-      Object.assign(defaultPosts, JSON.parse(savedPosts));
+      setIsLoading(false);
+      
+      // Then refresh in the background
+      refreshContent();
+    } else {
+      // If no data in localStorage, fetch from Google Sheets
+      refreshContent();
     }
   }, []);
-
-  const saveToLocalStorage = (videosData: VideoContent[], postsData: PostContent[]) => {
-    localStorage.setItem('dashboardVideos', JSON.stringify(videosData));
-    localStorage.setItem('dashboardPosts', JSON.stringify(postsData));
-    
-    // Update the default arrays for future component instances
-    Object.assign(defaultVideos, videosData);
-    Object.assign(defaultPosts, postsData);
-  };
 
   const addVideo = (video: VideoContent) => {
     const updatedVideos = [...videos, video];
     setVideos(updatedVideos);
-    saveToLocalStorage(updatedVideos, posts);
+    localStorage.setItem('dashboardVideos', JSON.stringify(updatedVideos));
   };
 
   const addPost = (post: PostContent) => {
     const updatedPosts = [...posts, post];
     setPosts(updatedPosts);
-    saveToLocalStorage(videos, updatedPosts);
+    localStorage.setItem('dashboardPosts', JSON.stringify(updatedPosts));
   };
 
   const removeVideo = (id: string) => {
     const updatedVideos = videos.filter(video => video.id !== id);
     setVideos(updatedVideos);
-    saveToLocalStorage(updatedVideos, posts);
+    localStorage.setItem('dashboardVideos', JSON.stringify(updatedVideos));
   };
 
   const removePost = (id: number) => {
     const updatedPosts = posts.filter(post => post.id !== id);
     setPosts(updatedPosts);
-    saveToLocalStorage(videos, updatedPosts);
+    localStorage.setItem('dashboardPosts', JSON.stringify(updatedPosts));
   };
 
   return (
-    <ContentContext.Provider value={{ videos, posts, addVideo, addPost, removeVideo, removePost }}>
+    <ContentContext.Provider 
+      value={{ 
+        videos, 
+        posts, 
+        addVideo, 
+        addPost, 
+        removeVideo, 
+        removePost, 
+        isLoading, 
+        refreshContent 
+      }}
+    >
       {children}
     </ContentContext.Provider>
   );

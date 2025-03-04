@@ -2,55 +2,16 @@
 import { useState, useEffect } from "react";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/Footer";
-import { VideoContent, PostContent, useContent, defaultVideos, defaultPosts } from "@/context/ContentContext";
+import { useContent } from "@/context/ContentContext";
 import { AboutSection } from "@/components/portfolio/AboutSection";
 import { ProjectsSection } from "@/components/portfolio/ProjectsSection";
 import { VideoProject, PostProject } from "@/components/portfolio/ProjectTypes";
 
 const Portfolio = () => {
-  const [dashboardPosts, setDashboardPosts] = useState<PostContent[]>([]);
-  const [dashboardVideos, setDashboardVideos] = useState<VideoContent[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  
   // Use the content context to access shared content
-  const { videos: contextVideos, posts: contextPosts } = useContent();
-
-  useEffect(() => {
-    // Load content either from context or localStorage
-    const loadDashboardContent = () => {
-      // First, try to use content from the context
-      if (contextVideos.length > 0 || contextPosts.length > 0) {
-        setDashboardVideos(contextVideos);
-        setDashboardPosts(contextPosts);
-        setIsLoading(false);
-        return;
-      }
-      
-      // Fallback to localStorage if context is empty
-      const savedVideos = localStorage.getItem('dashboardVideos');
-      const savedPosts = localStorage.getItem('dashboardPosts');
-      
-      if (savedVideos) {
-        setDashboardVideos(JSON.parse(savedVideos));
-      } else {
-        // Use default videos from context if available
-        setDashboardVideos(defaultVideos);
-      }
-      
-      if (savedPosts) {
-        setDashboardPosts(JSON.parse(savedPosts));
-      } else {
-        // Use default posts from context if available
-        setDashboardPosts(defaultPosts);
-      }
-      
-      setIsLoading(false);
-    };
-    
-    loadDashboardContent();
-  }, [contextVideos, contextPosts]);
+  const { videos: contextVideos, posts: contextPosts, isLoading } = useContent();
   
-  const postProjects: PostProject[] = dashboardPosts.map(post => ({
+  const postProjects: PostProject[] = contextPosts.map(post => ({
     id: post.id,
     title: post.title,
     description: post.description,
@@ -58,7 +19,7 @@ const Portfolio = () => {
     category: "post"
   }));
   
-  const videoProjects: VideoProject[] = dashboardVideos.map(video => ({
+  const videoProjects: VideoProject[] = contextVideos.map(video => ({
     id: video.id,
     title: video.title,
     description: video.description,
