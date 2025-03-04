@@ -54,7 +54,7 @@ const ContentList = ({ setEditingVideo, setEditingPost }: ContentListProps) => {
         ) : (
           <div className="space-y-4">
             {videos.map((video) => (
-              <div key={video.id} className="flex items-start gap-3 border-b pb-4">
+              <div key={`video-${video.id}`} className="flex items-start gap-3 border-b pb-4">
                 <div className="relative w-16 sm:w-20 h-12 sm:h-16 overflow-hidden rounded">
                   <img 
                     src={video.thumbnail || "https://via.placeholder.com/320x180?text=Video+Thumbnail"} 
@@ -111,7 +111,7 @@ const ContentList = ({ setEditingVideo, setEditingPost }: ContentListProps) => {
         ) : (
           <div className="space-y-4">
             {posts.map((post) => (
-              <div key={post.id} className="flex items-start gap-3 border-b pb-4">
+              <div key={`post-${post.id}`} className="flex items-start gap-3 border-b pb-4">
                 <div className="relative w-16 sm:w-20 h-12 sm:h-16 overflow-hidden rounded">
                   <img 
                     src={post.image || "https://via.placeholder.com/320x180?text=Post+Image"} 

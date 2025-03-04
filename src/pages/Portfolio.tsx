@@ -6,8 +6,10 @@ import { useContent } from "@/context/ContentContext";
 import { AboutSection } from "@/components/portfolio/AboutSection";
 import { ProjectsSection } from "@/components/portfolio/ProjectsSection";
 import { VideoProject, PostProject } from "@/components/portfolio/ProjectTypes";
+import { ContentProvider } from "@/context/ContentContext";
 
-const Portfolio = () => {
+// Create a wrapper component that has the ContentProvider
+const PortfolioContent = () => {
   const [isLoading, setIsLoading] = useState(true);
   
   // Use the content context to access shared content
@@ -52,6 +54,15 @@ const Portfolio = () => {
       </main>
       <Footer />
     </>
+  );
+};
+
+// Wrap the PortfolioContent with ContentProvider to ensure context is available
+const Portfolio = () => {
+  return (
+    <ContentProvider>
+      <PortfolioContent />
+    </ContentProvider>
   );
 };
 

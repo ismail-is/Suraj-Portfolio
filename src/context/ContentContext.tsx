@@ -9,10 +9,10 @@ import {
 } from '@/utils/googleSheetsApi';
 import { toast } from '@/hooks/use-toast';
 
-// Google Sheets configuration
-const SHEET_ID = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms"; // Demo sheet, replace with your own
-const VIDEOS_SHEET_NAME = "Sheet1"; // Replace with your videos sheet name
-const POSTS_SHEET_NAME = "Sheet2"; // Replace with your posts sheet name
+// Google Sheets configuration - Replace these with your actual Google Sheet IDs
+const SHEET_ID = "1RzWeIAXFcJGVTXfzOK0BNyh6lGefgmP1ZP-eGZ8cwkg"; // Replace with your Sheet ID
+const VIDEOS_SHEET_NAME = "Videos"; // Replace with your videos sheet name
+const POSTS_SHEET_NAME = "Posts"; // Replace with your posts sheet name
 
 // The context will use these types for compatibility with existing code
 export type VideoContent = {
